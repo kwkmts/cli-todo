@@ -1,6 +1,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <termios.h>
+#include <sys/ioctl.h>
 #include "lib.h"
 #include "model.h"
 
@@ -102,4 +104,42 @@ void make_list(List *list, int increment)
         list->todo_list[i].state = Unregistered;
         strcpy(list->todo_list[i].task, "");
     }
+}
+
+void enable_raw_mode(void)
+{
+    struct termios attr;
+    tcgetattr(0, &attr);
+    attr.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(0, TCSANOW, &attr);
+}
+
+void disable_raw_mode(void)
+{
+    struct termios attr;
+    tcgetattr(0, &attr);
+    attr.c_lflag |= ICANON | ECHO;
+    tcsetattr(0, TCSANOW, &attr);
+}
+
+bool keyboard_hit(void)
+{
+    int byteswaiting;
+    ioctl(0, FIONREAD, &byteswaiting);
+    return byteswaiting > 0;
+}
+
+void wait_for_keypress(char key)
+{
+    enable_raw_mode();
+    while (1) {
+        if (keyboard_hit()) {
+            int c = getchar();
+            if (c == key || !key) {
+                break;
+            }
+        }
+    }
+
+    disable_raw_mode();
 }

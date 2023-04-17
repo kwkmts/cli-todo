@@ -20,21 +20,20 @@ int main(void)
     List todo_list = {0, NULL};
     make_list(&todo_list, INITIAL_TODO_LENGTH);
 
-    puts("ヘルプを表示するにはhelpコマンドを入力");
+    system("clear");
+    puts("ヘルプを表示するにはhelpコマンドを入力\n");
 
     while (1) {
         char argv[8][64] = {};
         unsigned argc;
 
-        printf("# ");
+        list_all(&todo_list);
+
+        printf("\n# ");
         char *s = get_line();
         argc = separate_str_with_space(s, argv);
         if (strcmp(argv[0], "help") == 0) {
             help();
-        } else if (strcmp(argv[0], "list") == 0 && argc == 1) {
-            list(&todo_list);
-        } else if (strcmp(argv[0], "list") == 0 && argc == 2 && strcmp(argv[1], "-a") == 0) {
-            list_all(&todo_list);
         } else if (strcmp(argv[0], "add") == 0 && argc == 1) {
             add(&todo_list);
         } else if (strcmp(argv[0], "del") == 0 && argc == 2) {
@@ -55,9 +54,11 @@ int main(void)
             continue;
         } else {
             puts("サポートされていないコマンドです");
+            puts("続けるには任意のキーを押してください...");
+            wait_for_keypress(0);
         }
 
-        puts("");
+        system("clear");
     }
 
     free(todo_list.todo_list);
