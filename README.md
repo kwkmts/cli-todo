@@ -1,10 +1,6 @@
-#ToDo App(CLI) with C
+# ToDo App(CLI) with C
 
----
-
-##Using this project
-
----
+## Using this project
 
 1. Clone the repository and switch to the directory.
 

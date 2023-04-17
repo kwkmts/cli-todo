@@ -4,30 +4,71 @@
 #include "lib.h"
 #include "model.h"
 
-int separate_str_with_space(char str[64], char tok[8][64]) {
-  char *ptr;
-  int n;
+typedef struct Char Char;
 
-  if (str[0] == '\n') {
-    return 0;
-  }
+typedef struct Char {
+    int ch;
+    Char *next;
+} Char;
 
-  ptr = strtok(str, " \n");
-  strcpy(tok[0], ptr);
-
-  for (int i = 1; ptr != NULL; i++) {
-    ptr = strtok(NULL, " \n");
-
-    if (ptr != NULL) {
-      strcpy(tok[i], ptr);
+char *get_line()
+{
+    Char head;
+    size_t len = 0;
+    Char *var = &head;
+    while (1) {
+        int cur = getchar();
+        Char *c = calloc(1, sizeof(Char));
+        if (c == NULL) {
+            return NULL;
+        }
+        c->ch = cur;
+        var->next = c;
+        len++;
+        var = var->next;
+        if (cur == '\n') {
+            break;
+        }
     }
-  }
 
-  for (n = 0; tok[n][0] != '\0'; n++) {
-    ;
-  }
+    char *str = malloc(len * sizeof(char));
+    if (str == NULL) {
+        return NULL;
+    }
 
-  return n;
+    var = head.next;
+    for (int i = 0; i != len; i++) {
+        str[i] = (char) var->ch;
+        var = var->next;
+    }
+
+    return str;
+}
+
+int separate_str_with_space(char *str, char tok[8][64])
+{
+    char *ptr;
+    int n;
+
+    if (str[0] == '\n') {
+        return 0;
+    }
+
+    ptr = strtok(str, " \n");
+    strcpy(tok[0], ptr);
+
+    for (int i = 1; ptr != NULL; i++) {
+        ptr = strtok(NULL, " \n");
+
+        if (ptr != NULL) {
+            strcpy(tok[i], ptr);
+        }
+    }
+
+    for (n = 0; tok[n][0] != '\0'; n++) {
+    }
+
+    return n;
 }
 
 void get_str(char str[], int length)

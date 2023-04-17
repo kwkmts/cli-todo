@@ -2,9 +2,18 @@
 #include <string.h>
 #include <stdlib.h>
 #include "lib.h"
+
 #include "command.h"
 
+
 #define INITIAL_TODO_LENGTH 10
+
+typedef struct Char Char;
+
+typedef struct Char {
+    int ch;
+    Char *next;
+} Char;
 
 int main(void)
 {
@@ -14,15 +23,12 @@ int main(void)
     puts("ヘルプを表示するにはhelpコマンドを入力");
 
     while (1) {
-        char s[64] = {};
         char argv[8][64] = {};
         unsigned argc;
 
         printf("# ");
-        fgets(s, 64, stdin);
-
+        char *s = get_line();
         argc = separate_str_with_space(s, argv);
-
         if (strcmp(argv[0], "help") == 0) {
             help();
         } else if (strcmp(argv[0], "list") == 0 && argc == 1) {
