@@ -6,6 +6,8 @@
 #include "lib.h"
 #include "model.h"
 
+Todo *todo_list;
+
 typedef struct Char Char;
 
 typedef struct Char {
@@ -73,7 +75,7 @@ int separate_str_with_space(char *str, char tok[8][64])
     return n;
 }
 
-void get_str(char str[], int length)
+void get_str(char *str, int length)
 {
     fgets(str, length, stdin);
     for (int i = 0; str[i] != '\0'; i++) {
@@ -84,25 +86,42 @@ void get_str(char str[], int length)
     }
 }
 
-void make_list(List *list, int increment)
+Todo *new_todo(char *task)
 {
-    unsigned length = list->length;
+    static int id = 1;
+    Todo *todo = calloc(1, sizeof(Todo));
+    todo->id = id++;
+    todo->task = task;
+    todo->next = todo_list;
+    if (todo_list) {
+        todo_list->prev = todo;
+    }
+    todo_list = todo;
+    return todo;
+}
 
-    list->length += increment;
+Todo *find_todo(int id)
+{
+    for (Todo *todo = todo_list; todo; todo = todo->next) {
+        if (todo->id == id) {
+            return todo;
+        }
+    }
+    return NULL;
+}
 
-    Todo *tmp = (Todo *) realloc(list->todo_list, list->length * sizeof(Todo));
-
-    if (tmp == NULL) {
-        free(list->todo_list);
-        exit(1);
+void delete_todo(Todo *todo)
+{
+    if (todo->prev) {
+        todo->prev->next = todo->next;
+    } else {
+        todo_list = todo->next;
     }
 
-    list->todo_list = tmp;
-
-    for (unsigned i = length; i < list->length; i++) {
-        list->todo_list[i].id = i;
-        list->todo_list[i].state = Unregistered;
-        strcpy(list->todo_list[i].task, "");
+    if (todo->next) {
+        todo->next->prev = todo->prev;
+    } else {
+        todo->prev->next = NULL;
     }
 }
 

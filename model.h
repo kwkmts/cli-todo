@@ -3,19 +3,18 @@
 
 #define TASK_LENGTH 64
 
+typedef struct Todo Todo;
+
 typedef enum state {
-    Undone, Completed, Unregistered
+    Undone, Completed
 } State;
 
-typedef struct todo {
-    unsigned id;
+struct Todo {
+    int id;
     State state;
-    char task[TASK_LENGTH];
-} Todo;
-
-typedef struct list {
-    unsigned length;
-    Todo *todo_list;
-} List;
+    char *task;
+    Todo *prev;
+    Todo *next;
+};
 
 #endif

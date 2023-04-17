@@ -2,24 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include "lib.h"
-
 #include "command.h"
-
-
-#define INITIAL_TODO_LENGTH 10
-
-typedef struct Char Char;
-
-typedef struct Char {
-    int ch;
-    Char *next;
-} Char;
 
 int main(void)
 {
-    List todo_list = {0, NULL};
-    make_list(&todo_list, INITIAL_TODO_LENGTH);
-
     system("clear");
     puts("ヘルプを表示するにはhelpコマンドを入力\n");
 
@@ -27,7 +13,7 @@ int main(void)
         char argv[8][64] = {};
         unsigned argc;
 
-        list_all(&todo_list);
+        list_all();
 
         printf("\n# ");
         char *s = get_line();
@@ -35,22 +21,23 @@ int main(void)
         if (strcmp(argv[0], "help") == 0) {
             help();
         } else if (strcmp(argv[0], "add") == 0 && argc == 1) {
-            add(&todo_list);
+            add();
         } else if (strcmp(argv[0], "del") == 0 && argc == 2) {
             int idx = atoi(argv[1]);
-            del(&todo_list, idx);
+            del(idx);
         } else if (strcmp(argv[0], "edit") == 0 && argc == 2) {
             int idx = atoi(argv[1]);
-            edit(&todo_list, idx);
+            edit(idx);
         } else if (strcmp(argv[0], "cpl") == 0 && argc == 2) {
             int idx = atoi(argv[1]);
-            cpl(&todo_list, idx);
+            cpl(idx);
         } else if (strcmp(argv[0], "undo") == 0 && argc == 2) {
             int idx = atoi(argv[1]);
-            undo(&todo_list, idx);
+            undo(idx);
         } else if (strcmp(argv[0], "exit") == 0) {
             break;
         } else if (argc == 0) {
+            system("clear");
             continue;
         } else {
             puts("サポートされていないコマンドです");
@@ -60,8 +47,6 @@ int main(void)
 
         system("clear");
     }
-
-    free(todo_list.todo_list);
 
     return 0;
 }

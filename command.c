@@ -26,41 +26,33 @@ void help(void)
     wait_for_keypress('q');
 }
 
-void list(const List *todo_list)
+void list(void)
 {
-    Todo *list = todo_list->todo_list;
-
     puts("|=----+-----------+-------------------------------------------------------------------=|");
     puts("|  id | done?     | TASK                                                               |");
-    for (int i = 0; i < todo_list->length; i++) {
-        if (list[i].state == Undone) {
+    for (Todo *todo = todo_list; todo; todo = todo->next) {
+        if (todo->state == Undone) {
             puts("|=----+-----------+-------------------------------------------------------------------=|");
-            printf("| %3d | %-9s | %-67s|\n", list[i].id, state_str[list[i].state], list[i].task);
+            printf("| %3d | %-9s | %-67s|\n", todo->id, state_str[todo->state], todo->task);
         }
     }
     puts("|=----+-----------+-------------------------------------------------------------------=|");
 }
 
-void list_all(const List *todo_list)
+void list_all(void)
 {
-    Todo *list = todo_list->todo_list;
-
     puts("|=----+-----------+-------------------------------------------------------------------=|");
     puts("|  id | done?     | TASK                                                               |");
-    for (int i = 0; i < todo_list->length; i++) {
-        if (list[i].state != Unregistered) {
-            puts("|=----+-----------+-------------------------------------------------------------------=|");
-            printf("| %3d | %-9s | %-67s|\n", list[i].id, state_str[list[i].state], list[i].task);
-        }
+    for (Todo *todo = todo_list; todo; todo = todo->next) {
+        puts("|=----+-----------+-------------------------------------------------------------------=|");
+        printf("| %3d | %-9s | %-67s|\n", todo->id, state_str[todo->state], todo->task);
     }
     puts("|=----+-----------+-------------------------------------------------------------------=|");
 }
 
-void add(List *todo_list)
+void add(void)
 {
-    Todo *list = todo_list->todo_list;
-    char task[TASK_LENGTH] = "";
-    int i;
+    char *task = calloc(TASK_LENGTH, sizeof(char));
 
     while (strcmp(task, "") == 0) {
         printf("タスクを入力: ");
@@ -71,43 +63,28 @@ void add(List *todo_list)
         return;
     }
 
-    for (i = 0; i < todo_list->length; i++) {
-        if (list[i].state == Unregistered) {
-            list[i].state = Undone;
-            strncpy(list[i].task, task, 32);
-            return;
-        }
-    }
-
-    make_list(todo_list, 10);
-
-    list = todo_list->todo_list;
-    list[i].state = Undone;
-    strncpy(list[i].task, task, 32);
+    new_todo(task);
 }
 
-void del(List *todo_list, int index)
+void del(int index)
 {
-    if (index >= todo_list->length || todo_list->todo_list[index].state == Unregistered) {
+    Todo *todo = find_todo(index);
+    if (!todo) {
+        printf("id %dのToDoは存在しません\n", index);
         return;
     }
 
-    Todo *todo = &todo_list->todo_list[index];
-    todo->state = Unregistered;
-    strcpy(todo->task, "");
+    delete_todo(todo);
 }
 
-void edit(List *todo_list, int index)
+void edit(int index)
 {
-    if (index >= todo_list->length || todo_list->todo_list[index].state == Unregistered) {
+    Todo *todo = find_todo(index);
+    if (!todo) {
         return;
     }
 
-    Todo *todo = &todo_list->todo_list[index];
-    char task[TASK_LENGTH];
-    char new_task[TASK_LENGTH] = "";
-
-    strcpy(task, todo->task);
+    char *new_task = calloc(TASK_LENGTH, sizeof(char));
 
     printf("現在のタスク: %s\n", todo->task);
     while (strcmp(new_task, "") == 0) {
@@ -119,28 +96,25 @@ void edit(List *todo_list, int index)
         return;
     }
 
-    strncpy(todo->task, new_task, TASK_LENGTH);
-
+    todo->task = new_task;
 }
 
-void cpl(List *todo_list, int index)
+void cpl(int index)
 {
-    if (index >= todo_list->length || todo_list->todo_list[index].state == Unregistered) {
+    Todo *todo = find_todo(index);
+    if (!todo) {
         return;
     }
 
-    Todo *todo = &todo_list->todo_list[index];
     todo->state = Completed;
-
 }
 
-void undo(List *todo_list, int index)
+void undo(int index)
 {
-    if (index >= todo_list->length || todo_list->todo_list[index].state == Unregistered) {
+    Todo *todo = find_todo(index);
+    if (!todo) {
         return;
     }
 
-    Todo *todo = &todo_list->todo_list[index];
     todo->state = Undone;
-
 }
