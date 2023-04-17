@@ -14,7 +14,3 @@ lib.o: lib.c lib.h model.h
 
 clean:
 	rm -f *.o todoapp
-
-cmake:
-	cmake -S . -B build && cmake --build build
-

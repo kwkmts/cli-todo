@@ -12,11 +12,11 @@ cd cli-todo
 2. You can build the project with the command:
 
 ~~~
-make cmake
+make
 ~~~
 
 3. Run the application.
 
 ~~~
-./build/todoapp
+./todoapp
 ~~~
